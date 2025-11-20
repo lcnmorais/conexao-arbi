@@ -1,0 +1,88 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ConexaoArbi
+
+banco:
+  arbi:
+    conexao:
+      url: https://gaph.bancoarbi.com.br
+      client-id: 1d8993f3-3dd7-457a-b18e-46e3042d3c24
+      client-secret: 914eef5a-c69f-4264-b095-d8e6adc1318b
+      user-token:  7D5C9DC09F3048C6A59955DE6CEBE911
+      redirect-uri: http://localhost/
+    identificacao:
+      inscricaoParceiro: 95619003000114
+      contaPrevimil: 0520386164
+      contaMockExterno: 0520386172
+  fepweb:
+    baseUrl: https://uat-bancoarbi.fepweb.com.br/fepwebws/api/
+    username: previmil.hml
+    password: Previmil@2024
+    loginType: U
+    userFillerId: 9986
+
+
+arbi2:
+  api:
+    autenticacao: https://gaph.bancoarbi.com.br/oauth/
+    cadastroPf: https://gaph.bancoarbi.com.br/cadastropf/v2/
+    dispositivo: https://gaph.bancoarbi.com.br/device-manager/api/v1/
+    pix: https://gaph.bancoarbi.com.br/pix/v2/
+    accountManagement: https://gaph.bancoarbi.com.br/
+  credenciais:
+    clientId: 1d8993f3-3dd7-457a-b18e-46e3042d3c24
+    clientSecret: 914eef5a-c69f-4264-b095-d8e6adc1318b
+    tokenUsuario: 7D5C9DC09F3048C6A59955DE6CEBE911
+    conta1: 0520386164
+    conta2: 0520386172
+    inscricaoParceiro: 95619003000114
+  fepweb:
+    baseUrl: https://uat-bancoarbi.fepweb.com.br/fepwebws/api/
+    username: previmil.hml
+    password: Previmil@2024
+    loginType: U
+    userFillerId: 9986
+
+
+
+logging:
+  level:
+    feign: DEBUG
+    software.stoica.labs.baas.ConexaoArbi.feign: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+banco:
+  arbi:
+    url: https://gapp.bancoarbi.com.br
+    client-id: a7136cd4-591e-4b05-89a1a-d297cfe9466e
+    client-secret: a7136cd4-591e-4b05-89a1a-d297cfe9466e
+
+
+arbi2:
+  api:
+    autenticacao: https://gapp.bancoarbi.com.br/oauth/
+    cadastroPf: https://gapp.bancoarbi.com.br/cadastropf/v2/
+    dispositivo: https://gapp.bancoarbi.com.br/device-manager/api/v1/
+    pix: https://gapp.bancoarbi.com.br/pix/v2/
+    accountManagement: https://gapp.bancoarbi.com.br/
+  credenciais:
+    clientId: a7136cd4-591e-4b05-89aa-d297cfe9466e
+    clientSecret: 7791b84b-39ca-4857-8992-7b2ac6143091
+    tokenUsuario: VXrC2eJR32YBKfViOY9IGeoZGYyjYXax
+    conta1: 0003207185
+    conta2:
+    inscricaoParceiro: 95619003000114
+  fepweb:
+    baseUrl: https://bancoarbi.fepweb.com.br/fepwebws/api/
+    username: previmil.prod
+    password: Ejecpr5!
+    loginType: U
+    userFillerId: 606053

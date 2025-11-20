@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "banco.arbi.identificacao")
 public record IdentificacaoArbiProperties(
-   String identificacaoParceiro,
+   String inscricaoParceiro,
    String contaPrevimil,
    String contaMockExterno
 ){}

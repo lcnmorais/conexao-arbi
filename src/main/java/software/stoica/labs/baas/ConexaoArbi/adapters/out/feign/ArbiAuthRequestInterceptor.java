@@ -18,14 +18,9 @@ public class ArbiAuthRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
+        template.header("Authorization", "Basic " + credencialPrevimilArbi.getEncondedCredentials());
 
-        if (template.url().contains("grant-code")) {
-            template.header("Authorization", "Basic " + credencialPrevimilArbi.getEncondedCredentials());
-            return;
-        }
-
-        if (template.url().contains("access-token")) {
-            template.header("Authorization", "Basic " + credencialPrevimilArbi.getEncondedCredentials());
+        if (template.url().contains("grant-code") || template.url().contains("access-token")) {
             return;
         }
 

@@ -15,5 +15,5 @@ import software.stoica.labs.baas.ConexaoArbi.core.model.ContaCorrenteResponse;
 public interface AccountsFeignClient {
 
     @PostMapping("/contacorrente/v2/contacorrente")
-    ContaCorrenteResponse getBalance(@RequestBody ContaCorrenteRequest request);
+    ContaCorrenteResponse[] getBalance(@RequestBody ContaCorrenteRequest request);
 }

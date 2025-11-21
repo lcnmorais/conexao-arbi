@@ -1,0 +1,32 @@
+package software.stoica.labs.baas.ConexaoArbi.core.model;
+
+public record KYCRequest(
+    String nome,
+    String cpf,
+    String endereco,
+    String numero,
+    String complemento,
+    String bairro,
+    String cidade,
+    String cep,
+    String uf,
+    String datanascimento,
+    String naturalidade,
+    String tipoident,
+    String numeroident,
+    String dataident,
+    String orgaoident,
+    String uforgaoident,
+    String nomemae,
+    String nomepai,
+    String email,
+    String ddd,
+    String telefone,
+    String ppe,
+    String cargo,
+    String renda,
+    String nacionalidade,
+    String sexo,
+    String periodo,
+    String observacao
+) {}

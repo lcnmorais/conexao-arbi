@@ -1,0 +1,25 @@
+
+
+
+POST http://localhost:8080/api/auth/connect 
+
+
+###
+GET http://localhost:8080/api/accounts
+
+# ####################################################
+# Transferencia para Participante
+# ####################################################
+
+###
+POST http://localhost:8080/api/payment/funding/0520386164
+Content-Type: application/json
+
+{
+    "nroContaBeneficiario": "0540508699",
+    "cpfCnpjBeneficiario": "87422685085",
+    "nomeBeneficiario": "João",
+    "valorOperacao": 1.00
+}
+
+

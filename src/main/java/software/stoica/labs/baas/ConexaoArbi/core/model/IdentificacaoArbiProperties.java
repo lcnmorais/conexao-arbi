@@ -8,3 +8,5 @@ public record IdentificacaoArbiProperties(
    String contaPrevimil,
    String contaMockExterno
 ){}
+
+

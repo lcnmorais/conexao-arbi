@@ -1,0 +1,52 @@
+
+
+
+POST http://localhost:8080/api/auth/connect 
+
+
+###
+GET http://localhost:8080/api/accounts
+
+# ####################################################
+# Contas Previmil
+# ####################################################
+
+# --- Homologaçao
+
+###
+GET http://localhost:8080/api/accounts/0520386164/balance
+
+###
+GET http://localhost:8080/api/accounts/0520386164/history?fromDate=2025-11-01&toDate=2025-11-30
+
+# --- Homologaçao
+
+###
+GET http://localhost:8080/api/accounts/0520386172/balance
+
+###
+GET http://localhost:8080/api/accounts/0520386172/history?fromDate=2025-11-01&toDate=2025-11-30
+
+
+# --- Produção
+
+###
+GET http://localhost:8080/api/accounts/0003207185/balance
+
+###
+GET http://localhost:8080/api/accounts/0003207185/history?fromDate=2025-11-01&toDate=2025-11-30
+
+
+# ---
+
+# ####################################################
+# Contas de Terceiros
+# ####################################################
+
+###
+GET http://localhost:8080/api/accounts/0540508699/balance
+
+###
+GET http://localhost:8080/api/accounts/0540508699/history?fromDate=2025-11-01&toDate=2025-11-30
+
+

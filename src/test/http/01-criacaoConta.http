@@ -1,0 +1,129 @@
+
+
+
+POST http://localhost:8080/api/auth/connect 
+
+
+
+###
+POST http://localhost:8080/api/accounts/kyc/analyse
+Content-Type: application/json
+
+{
+  "nome": "João da Silva Sauro",
+  "cpf": "87422685085",
+  "endereco": "Rua das Flores",
+  "numero": "123",
+  "complemento": "Apto 101",
+  "bairro": "Centro",
+  "cidade": "São Paulo",
+  "cep": "01001000",
+  "uf": "SP",
+  "datanascimento": "1980-05-20",
+  "naturalidade": "Rio de Janeiro",
+  "tipoident": "RG",
+  "numeroident": "123456789",
+  "dataident": "2000-01-15",
+  "orgaoident": "SSP",
+  "uforgaoident": "SP",
+  "nomemae": "Maria da Silva Sauro",
+  "nomepai": "José da Silva Sauro",
+  "email": "joao.sauro@email.com",
+  "ddd": "11",
+  "telefone": "987654321",
+  "ppe": "Não",
+  "cargo": "Analista de Sistemas Pleno",
+  "renda": "5500.00",
+  "nacionalidade": "Brasileira",
+  "sexo": "M",
+  "periodo": "Diurno",
+  "observacao": "Cliente com bom histórico."
+}
+
+###
+POST http://localhost:8080/api/accounts/kyc/check
+Content-Type: application/json
+
+{
+  "nome": "João da Silva Sauro",
+  "cpf": "87422685085",
+  "endereco": "Rua das Flores",
+  "numero": "123",
+  "complemento": "Apto 101",
+  "bairro": "Centro",
+  "cidade": "São Paulo",
+  "cep": "01001000",
+  "uf": "SP",
+  "datanascimento": "1980-05-20",
+  "naturalidade": "Rio de Janeiro",
+  "tipoident": "RG",
+  "numeroident": "123456789",
+  "dataident": "2000-01-15",
+  "orgaoident": "SSP",
+  "uforgaoident": "SP",
+  "nomemae": "Maria da Silva Sauro",
+  "nomepai": "José da Silva Sauro",
+  "email": "joao.sauro@email.com",
+  "ddd": "11",
+  "telefone": "987654321",
+  "ppe": "Não",
+  "cargo": "Analista de Sistemas Pleno",
+  "renda": "5500.00",
+  "nacionalidade": "Brasileira",
+  "sexo": "M",
+  "periodo": "Diurno",
+  "observacao": "Cliente com bom histórico."
+}
+
+
+###
+POST http://localhost:8080/api/accounts/new
+Content-Type: application/json
+
+{
+  "nome": "João da Silva Sauro",
+  "cpf": "87422685085",
+  "endereco": "Rua das Flores",
+  "numero": "123",
+  "complemento": "Apto 101",
+  "bairro": "Centro",
+  "cidade": "São Paulo",
+  "cep": "01001000",
+  "uf": "SP",
+  "datanascimento": "1980-05-20",
+  "naturalidade": "Rio de Janeiro",
+  "tipoident": "RG",
+  "numeroident": "123456789",
+  "dataident": "2000-01-15",
+  "orgaoident": "SSP",
+  "uforgaoident": "SP",
+  "nomemae": "Maria da Silva Sauro",
+  "nomepai": "José da Silva Sauro",
+  "email": "joao.sauro@email.com",
+  "ddd": "11",
+  "telefone": "987654321",
+  "ppe": "Não",
+  "cargo": "Analista de Sistemas Pleno",
+  "renda": "5500.00",
+  "nacionalidade": "N",
+  "sexo": "M",
+  "periodo": "Diurno",
+  "observacao": "Cliente com bom histórico."
+}
+
+# HTTP/1.1 200 
+#Content-Type: application/json
+#Transfer-Encoding: chunked
+#Date: Fri, 21 Nov 2025 13:12:53 GMT
+#Connection: close
+
+#{
+#  "idmodulo": 4,
+#  "idtransacao": 1,
+#  "idrequisicaoarbi": "20251121102013@7799343396251",
+#  "idrequisicaoparceiro": "1763730765785",
+#  "idstatus": 201,
+#  "descricaostatus": "Sucesso",
+#  "resultado": "{\"codcliente\":\"000057259\",\"contadepositovista\":\"0540508699\",\"resultado\":\"Sucesso na criação do cliente/conta\"}"
+#}
+#

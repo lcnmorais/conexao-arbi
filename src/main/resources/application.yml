@@ -36,8 +36,8 @@ arbi2:
     clientId: 1d8993f3-3dd7-457a-b18e-46e3042d3c24
     clientSecret: 914eef5a-c69f-4264-b095-d8e6adc1318b
     tokenUsuario: 7D5C9DC09F3048C6A59955DE6CEBE911
-    conta1: 0520386164
-    conta2: 0520386172
+    contaPrevimil: 0520386164
+    contaMockExterno: 0520386172
     inscricaoParceiro: 95619003000114
   fepweb:
     baseUrl: https://uat-bancoarbi.fepweb.com.br/fepwebws/api/

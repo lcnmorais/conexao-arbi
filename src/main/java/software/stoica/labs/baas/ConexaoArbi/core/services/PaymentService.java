@@ -8,6 +8,7 @@ import software.stoica.labs.baas.ConexaoArbi.core.model.AccessTokenResponse;
 import software.stoica.labs.baas.ConexaoArbi.core.model.PaymentRequest;
 import software.stoica.labs.baas.ConexaoArbi.core.model.FundingRequest;
 import software.stoica.labs.baas.ConexaoArbi.core.model.PaymentResponse;
+import software.stoica.labs.baas.ConexaoArbi.core.model.SweepRequest;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class PaymentService {
     private String codUsuario;
 
     @Value("${banco.arbi.conexao.nomePagador:Parceiro}")
-    private String nomePagador;
+    private String NOME_PREVIMIL;
 
     @Value("${banco.arbi.conexao.campoLivre:Transferência para quitação de boleto}")
     private String campoLivre;
@@ -55,22 +56,22 @@ public class PaymentService {
     @Value("${banco.arbi.conexao.prioridade:HIGH}")
     private String prioridade;
 
-    public PaymentResponse processFunding(String nroContaPagador, FundingRequest beneficiaryRequest) {
+    public PaymentResponse processFunding(String nroContaPagador, FundingRequest fundingRequest) {
         // Generate a request ID
         Long requestId = requestPreparationService.generateRequestId();
         String requestIdStr = requestId.toString();
 
         // Compose the full payment request with constants
-        PaymentRequest fullPaymentRequest = composePaymentRequest(nroContaPagador, beneficiaryRequest);
+        PaymentRequest fullPaymentRequest = composeFundingPaymentRequest(nroContaPagador, fundingRequest);
 
         try {
             // Get a valid access token
             AccessTokenResponse token = tokenManagementService.getAccessToken();
 
             // Log the request
-            traceService.logOperation("", "ENVIO", "TRANSFERENCIA",
+            traceService.logOperation("", "ENVIO", "FUNDING",
                 identificacaoArbiProperties.inscricaoParceiro(),
-                nroContaPagador,
+                identificacaoArbiProperties.contaPrevimil(),
                 requestIdStr,
                 "SUCESSO");
 
@@ -81,37 +82,93 @@ public class PaymentService {
             if (responseArray != null && responseArray.length > 0) {
                 PaymentResponse response = responseArray[0];
                 traceService.logOperation(response.idrequisicaoarbi(),
-                    "RESPOSTA", "TRANSFERENCIA",
-                    beneficiaryRequest.cpfCnpjBeneficiario(),
-                    beneficiaryRequest.nroContaBeneficiario(),
+                    "RESPOSTA", "FUNDING",
+                    fundingRequest.cpfCnpjBeneficiario(),
+                    fundingRequest.nroContaBeneficiario(),
                     requestIdStr,
                     "SUCESSO -> "+response);
                 return response;
             } else {
                 traceService.logOperation("",
-                    "RESPOSTA", "TRANSFERENCIA",
-                    beneficiaryRequest.cpfCnpjBeneficiario(),
-                    beneficiaryRequest.nroContaBeneficiario(),
+                    "RESPOSTA", "FUNDING",
+                    fundingRequest.cpfCnpjBeneficiario(),
+                    fundingRequest.nroContaBeneficiario(),
                     requestIdStr,
-                    "No response returned from payment processing");
-                throw new RuntimeException("No response returned from payment processing");
+                    "No response returned from funding processing");
+                throw new RuntimeException("No response returned from funding processing");
             }
         } catch (Exception e) {
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
 
             // Log the error
             traceService.logOperation("",
-                "RESPOSTA", "TRANSFERENCIA",
+                "RESPOSTA", "FUNDING",
                 identificacaoArbiProperties.inscricaoParceiro(),
-                nroContaPagador,
+                identificacaoArbiProperties.contaPrevimil(),
                 requestIdStr,
                 errorMessage);
 
-            throw new RuntimeException("Error processing payment: " + errorMessage, e);
+            throw new RuntimeException("Error processing funding: " + errorMessage, e);
         }
     }
 
-    private PaymentRequest composePaymentRequest(String nroContaPagador, FundingRequest beneficiaryRequest) {
+    public PaymentResponse processSweep(String numeroConta, SweepRequest sweepRequest) {
+        // Generate a request ID
+        Long requestId = requestPreparationService.generateRequestId();
+        String requestIdStr = requestId.toString();
+
+        // Compose the full payment request for sweep operation
+        PaymentRequest fullPaymentRequest = composeSweepPaymentRequest(numeroConta, sweepRequest);
+
+        try {
+            // Get a valid access token
+            AccessTokenResponse token = tokenManagementService.getAccessToken();
+
+            // Log the request
+            traceService.logOperation("", "ENVIO", "SWEEP",
+                sweepRequest.cpfCnpjBeneficiario(),
+                numeroConta,
+                requestIdStr,
+                "SUCESSO");
+
+            // Call the feign client to process the sweep
+            PaymentResponse[] responseArray = paymentFeignClient.processPayment(fullPaymentRequest);
+
+            // Log the response with Arbi request ID
+            if (responseArray != null && responseArray.length > 0) {
+                PaymentResponse response = responseArray[0];
+                traceService.logOperation(response.idrequisicaoarbi(),
+                    "RESPOSTA", "SWEEP",
+                    sweepRequest.cpfCnpjBeneficiario(),
+                    identificacaoArbiProperties.contaPrevimil(),
+                    requestIdStr,
+                    "SUCESSO -> "+response);
+                return response;
+            } else {
+                traceService.logOperation("",
+                    "RESPOSTA", "SWEEP",
+                    sweepRequest.cpfCnpjBeneficiario(),
+                    identificacaoArbiProperties.contaPrevimil(),
+                    requestIdStr,
+                    "No response returned from sweep processing");
+                throw new RuntimeException("No response returned from sweep processing");
+            }
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+
+            // Log the error
+            traceService.logOperation("",
+                "RESPOSTA", "SWEEP",
+                sweepRequest.cpfCnpjBeneficiario(),
+                numeroConta,
+                requestIdStr,
+                errorMessage);
+
+            throw new RuntimeException("Error processing sweep: " + errorMessage, e);
+        }
+    }
+
+    private PaymentRequest composeFundingPaymentRequest(String nroContaPagador, FundingRequest fundingRequest) {
         // Get current date
         String currentDate = LocalDate.now().toString();
 
@@ -121,23 +178,53 @@ public class PaymentService {
         return new PaymentRequest(
             COD_INSTITUICAO,      // Constant: "54403563"
             COD_AGENCIA,          // Constant: "0001"
-            nroContaPagador,            // Value from controller path variable
+            identificacaoArbiProperties.contaPrevimil(), // Source is contaPrevimil
             TIPO_CONTA,           // Constant: "CACC"
             identificacaoArbiProperties.inscricaoParceiro(), // From properties
-            beneficiaryRequest.valorOperacao(), // From beneficiary request
+            fundingRequest.valorOperacao(), // From funding request
             codUsuario,                 // Constant: "_autbank1"
             currentDate,                // Current date
-            nomePagador,                // Constant: "Parceiro"
+            NOME_PREVIMIL,                // Constant: "Parceiro"
             campoLivre,                 // Constant: "Transferência para quitação de boleto"
             idIdempotente,              // Generated UUID
             canalEntrada,               // Constant: "Mobile App"
             prioridade,                 // Constant: "HIGH"
-            COD_INSTITUICAO, // Constant: "54403563"
-            COD_AGENCIA,     // Constant: "0001"
-            beneficiaryRequest.nroContaBeneficiario(),       // From beneficiary request
+            COD_INSTITUICAO,            // Constant: "54403563"
+            COD_AGENCIA,                // Constant: "0001"
+            fundingRequest.nroContaBeneficiario(),       // Destination from funding request
+            TIPO_CONTA,                 // Constant: "CACC"
+            fundingRequest.cpfCnpjBeneficiario(),        // From funding request
+            fundingRequest.nomeBeneficiario()            // From funding request
+        );
+    }
+
+    private PaymentRequest composeSweepPaymentRequest(String nroContaPagador, SweepRequest sweepRequest) {
+        // Get current date
+        String currentDate = LocalDate.now().toString();
+
+        // Generate UUID for idIdempotente
+        String idIdempotente = UUID.randomUUID().toString();
+
+        return new PaymentRequest(
+            COD_INSTITUICAO,      // Constant: "54403563"
+            COD_AGENCIA,          // Constant: "0001"
+            nroContaPagador,      // Source is the account to sweep from
+            TIPO_CONTA,           // Constant: "CACC"                
+            sweepRequest.cpfCnpjBeneficiario(),  // From sweep request
+            sweepRequest.valorOperacao(), // From sweep request                
+            codUsuario,           // Constant: "_autbank1"
+            currentDate,          // Current date
+            sweepRequest.nomeBeneficiario(),          // Constant: "Parceiro"
+            "Sweep operation - moving funds to main account", // Specific field for sweep
+            idIdempotente,        // Generated UUID
+            canalEntrada,         // Constant: "Mobile App"
+            prioridade,           // Constant: "HIGH"
+            COD_INSTITUICAO,      // Constant: "54403563"
+            COD_AGENCIA,          // Constant: "0001"
+            identificacaoArbiProperties.contaPrevimil(), // Destination is contaPrevimil
             TIPO_CONTA,           // Constant: "CACC"
-            beneficiaryRequest.cpfCnpjBeneficiario(),        // From beneficiary request
-            beneficiaryRequest.nomeBeneficiario()            // From beneficiary request
+            identificacaoArbiProperties.inscricaoParceiro(), // From properties
+            NOME_PREVIMIL// From sweep request
         );
     }
 }

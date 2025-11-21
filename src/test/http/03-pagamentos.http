@@ -11,7 +11,7 @@ GET http://localhost:8080/api/accounts
 # Transferencia para Participante
 # ####################################################
 
-###
+### Alimentar conta de Participante
 POST http://localhost:8080/api/payment/funding/0520386164
 Content-Type: application/json
 
@@ -23,3 +23,14 @@ Content-Type: application/json
 }
 
 
+### Retornar Saldo remanescente de conta de Participante
+POST http://localhost:8080/api/payment/sweep/0540508699
+Content-Type: application/json
+
+{
+    "cpfCnpjBeneficiario": "87422685085",
+    "nomeBeneficiario": "João",
+    "valorOperacao": 1.00
+}
+
+### Alimentar conta de Participante

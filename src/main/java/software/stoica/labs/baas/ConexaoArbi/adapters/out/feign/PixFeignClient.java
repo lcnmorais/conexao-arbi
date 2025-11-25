@@ -1,10 +1,16 @@
 package software.stoica.labs.baas.ConexaoArbi.adapters.out.feign;
 
+import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import feign.Headers;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import software.stoica.labs.baas.ConexaoArbi.core.model.DeviceListResponse;
+import software.stoica.labs.baas.ConexaoArbi.core.model.DeviceRegistrationRequest;
+import software.stoica.labs.baas.ConexaoArbi.core.model.DeviceRegistrationResponse;
 import software.stoica.labs.baas.ConexaoArbi.core.model.PixKeyResponse;
+import software.stoica.labs.baas.ConexaoArbi.core.model.PixPaymentStringRequest;
 
 @FeignClient(
         name = "pixFeignClient",
@@ -17,4 +23,14 @@ public interface PixFeignClient {
     PixKeyResponse[] obterChavesPixPorDocumentoAgenciaConta(
             @PathVariable("numeroAgencia") String numeroAgencia,
             @PathVariable("numeroConta") String numeroConta);
+
+    @PostMapping("/device-manager/api/v1/devices")
+    DeviceRegistrationResponse registerDevice(
+            @RequestBody DeviceRegistrationRequest request);
+
+    @GetMapping("/device-manager/api/v1/devices")
+    DeviceListResponse[] listDevices();
+
+    @PostMapping("/pix/v2/qrcode/dinamico/imediato/v2")
+    PixKeyResponse[] generatePixPaymentString(@RequestBody PixPaymentStringRequest request);
 }

@@ -335,4 +335,82 @@ public class PixService {
             throw new RuntimeException("Error processing PIX end-to-end - Error: " + errorMessage, e);
         }
     }
+
+    public PixPaymentResponse realizarPixPayment(PixPaymentRequest request) {
+        // Generate a request ID
+        Long requestId = requestPreparationService.generateRequestId();
+        String requestIdStr = requestId.toString();
+
+        try {
+            // Get a valid access token
+            AccessTokenResponse token = tokenManagementService.getAccessToken();
+
+            // Create the internal request with additional data
+            PixPaymentInternalRequest internalRequest =
+                PixPaymentInternalRequest.fromPixPaymentRequest(request, identificacaoArbiProperties);
+
+            // Log the request
+            traceService.logOperation(internalRequest.toString(), "ENVIO", "PIX_PAYMENT", request.cpfCnpjPagador(), request.nroContaPagador(), requestIdStr, "SUCESSO");
+
+            // Call the feign client to perform the PIX payment
+            String responseJson = pixFeignClient.realizarPixPayment(internalRequest);
+
+            // Log the response with Arbi request ID
+            String responseLog = responseJson != null ? responseJson : "";
+
+            // Parse the response
+            String situacao = "ERROR";
+            String mensagem = "No response returned";
+            String idOperacao = "";
+
+            if (responseJson != null && !responseJson.isEmpty()) {
+                try {
+                    // The response is a JSON array, so parse it as such
+                    PixProcessamentoResponse[] responseArray = objectMapper.readValue(
+                        responseJson,
+                        PixProcessamentoResponse[].class
+                    );
+
+                    if (responseArray != null && responseArray.length > 0) {
+                        PixProcessamentoResponse response = responseArray[0]; // Get the first response from the array
+                        situacao = response != null ? response.status().toString() : "ERROR";
+
+                        // Extract the operation ID and message from the inner response string
+                        if (response != null && response.response() != null) {
+                            // Parse the inner response JSON string to extract operation details
+                            java.util.Map<String, Object> responseMap = objectMapper.readValue(
+                                response.response(),
+                                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {}
+                            );
+
+                            if (responseMap.containsKey("idOperacao")) {
+                                idOperacao = responseMap.get("idOperacao").toString();
+                            }
+                            if (responseMap.containsKey("mensagem")) {
+                                mensagem = responseMap.get("mensagem").toString();
+                            } else {
+                                mensagem = "Payment processed successfully";
+                            }
+                        }
+                    }
+                } catch (Exception parseException) {
+                    // If parsing fails, log the error and continue with default message
+                    String errorMsg = "Error parsing response JSON: " + parseException.getMessage();
+                    traceService.logOperation(errorMsg, "RESPOSTA", "PIX_PAYMENT", request.cpfCnpjPagador(), request.nroContaPagador(), requestIdStr, "JSON Parse Error");
+                    mensagem = errorMsg;
+                }
+            }
+
+            traceService.logOperation(responseLog, "RESPOSTA", "PIX_PAYMENT", request.cpfCnpjPagador(), request.nroContaPagador(), requestIdStr, situacao);
+
+            return new PixPaymentResponse(situacao, mensagem, idOperacao);
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+
+            // Log the error
+            traceService.logOperation("", "RESPOSTA", "PIX_PAYMENT", request.cpfCnpjPagador(), request.nroContaPagador(), requestIdStr, errorMessage);
+
+            throw new RuntimeException("Error performing PIX payment - Error: " + errorMessage, e);
+        }
+    }
 }

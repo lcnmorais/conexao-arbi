@@ -1,0 +1,57 @@
+
+
+
+POST http://localhost:8080/api/auth/connect 
+
+
+### Listar Chaves PIX de conta principal
+GET http://localhost:8080/api/pix/mock/receive
+
+
+### Listar Chaves PIX de mock
+GET http://localhost:8080/api/pix/mock/payment
+
+
+### Listar Dispositivos
+GET http://localhost:8080/api/pix/device/list
+
+
+### -------------------------------------------------------------------------
+
+### Gerar Copia e cola
+POST http://localhost:8080/api/pix/payment-string
+Content-Type: application/json
+
+{
+    "documentoId": "contratoAF",
+    "valor": 10.00,
+    "reutilizavel":false,
+    "calendarioExpiracaoSegundos": 3456000
+}
+
+
+### Gerar End2End
+POST http://localhost:8080/api/pix/generate-end2end
+Content-Type: application/json
+
+{
+    "paymentString":"00020101021226860014BR.GOV.BCB.PIX2564qrcode-h.bancoarbi.com.br/gi/v2/ad70f1ce94454b76b92a9e571e6746925204000053039865802BR5908Previmil6014RIO DE JANEIRO62070503***6304F0D5"
+}
+
+
+### Gerar End2End
+POST http://localhost:8080/api/pix/payment
+Content-Type: application/json
+
+{
+    "codAgenciaPagador":"0001",
+    "nroContaPagador":"0540508699",
+    "tipoContaPagador":"TRAN",
+    "cpfCnpjPagador":"87422685085",
+    "nomePagador":"João da Silva Sauro",
+    "dataPagamento":"2025-11-26",
+    "endToEnd":"E54403563202511261659vYzFqWcWEBg",
+    "campoLivre":"Pagamento de Teste",
+    "valorOperacao":10.00
+}
+

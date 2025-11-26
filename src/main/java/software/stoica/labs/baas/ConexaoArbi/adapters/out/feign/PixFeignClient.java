@@ -32,4 +32,7 @@ public interface PixFeignClient {
 
     @PostMapping("/pix/v2/qrcode/processamento")
     String processarPixPayment(@RequestBody PixProcessamentoRequest request);
+
+    @PostMapping("/pix/v2/operacao/ordem_pagamento/")
+    String realizarPixPayment(@RequestBody PixPaymentInternalRequest request);
 }

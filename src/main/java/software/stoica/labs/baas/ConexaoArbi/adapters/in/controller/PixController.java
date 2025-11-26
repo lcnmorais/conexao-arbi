@@ -133,4 +133,16 @@ public class PixController {
         }
     }
 
+    @PostMapping("/payment")
+    public ResponseEntity<?> realizarPixPayment(@RequestBody PixPaymentRequest request) {
+        try {
+            var response = pixService.realizarPixPayment(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+            Map<String, Object> errorResponse = Map.of("error", "Failed to perform PIX payment: " + errorMessage);
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+
 }

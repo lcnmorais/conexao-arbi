@@ -19,7 +19,7 @@ Content-Type: application/json
     "nroContaBeneficiario": "0540508699",
     "cpfCnpjBeneficiario": "87422685085",
     "nomeBeneficiario": "João",
-    "valorOperacao": 1.00
+    "valorOperacao": 10.00
 }
 
 
@@ -46,10 +46,3 @@ Content-Type: application/json
     "valorOperacao": 1.00
 }
 
-### Listar Chaves PIX de mock
-GET http://localhost:8080/api/pix/mock/payment
-
-
-
-### Listar Chaves PIX de mock
-GET http://localhost:8080/api/pix/mock/receive

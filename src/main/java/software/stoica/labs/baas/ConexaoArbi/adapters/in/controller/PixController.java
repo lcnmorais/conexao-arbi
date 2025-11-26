@@ -121,4 +121,16 @@ public class PixController {
         }
     }
 
+    @PostMapping("/generate-end2end")
+    public ResponseEntity<?> processarPixEnd2End(@RequestBody PixEnd2EndProcessingRequest request) {
+        try {
+            var response = pixService.processarPixEnd2End(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+            Map<String, Object> errorResponse = Map.of("error", "Failed to process PIX end-to-end: " + errorMessage);
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+
 }

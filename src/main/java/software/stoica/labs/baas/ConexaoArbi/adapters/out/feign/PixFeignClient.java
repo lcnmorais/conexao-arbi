@@ -6,11 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import software.stoica.labs.baas.ConexaoArbi.core.model.DeviceListResponse;
-import software.stoica.labs.baas.ConexaoArbi.core.model.DeviceRegistrationRequest;
-import software.stoica.labs.baas.ConexaoArbi.core.model.DeviceRegistrationResponse;
-import software.stoica.labs.baas.ConexaoArbi.core.model.PixKeyResponse;
-import software.stoica.labs.baas.ConexaoArbi.core.model.PixPaymentStringRequest;
+import software.stoica.labs.baas.ConexaoArbi.core.model.*;
 
 @FeignClient(
         name = "pixFeignClient",
@@ -33,4 +29,7 @@ public interface PixFeignClient {
 
     @PostMapping("/pix/v2/qrcode/dinamico/imediato/v2")
     PixKeyResponse[] generatePixPaymentString(@RequestBody PixPaymentStringRequest request);
+
+    @PostMapping("/pix/v2/qrcode/processamento")
+    String processarPixPayment(@RequestBody PixProcessamentoRequest request);
 }

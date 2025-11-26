@@ -261,4 +261,78 @@ public class PixService {
             throw new RuntimeException("Error generating PIX payment string - Error: " + errorMessage, e);
         }
     }
+
+    public EndToEndResponse processarPixEnd2End(PixEnd2EndProcessingRequest request) {
+        // Generate a request ID
+        Long requestId = requestPreparationService.generateRequestId();
+        String requestIdStr = requestId.toString();
+
+        try {
+            // Get a valid access token
+            AccessTokenResponse token = tokenManagementService.getAccessToken();
+
+            // Get CPF/CNPJ from properties
+            String cpfCnpj = identificacaoArbiProperties.inscricaoParceiro();
+
+            // Create the request object for the Feign client
+            PixProcessamentoRequest feignRequest = new PixProcessamentoRequest(
+                cpfCnpj,
+                request.paymentString()
+            );
+
+            // Log the request
+            traceService.logOperation(feignRequest.toString(), "ENVIO", "PIX_END2END", cpfCnpj, "", requestIdStr, "SUCESSO");
+
+            // Call the feign client to process the PIX end-to-end
+            String responseJson = pixFeignClient.processarPixPayment(feignRequest);
+
+            // Log the response with Arbi request ID
+            String responseLog = responseJson != null ? responseJson : "";
+            String status = "ERROR";
+            String endToEnd = "No endToEnd returned";
+
+            if (responseJson != null && !responseJson.isEmpty()) {
+                try {
+                    // Parse the outer JSON array
+                    PixProcessamentoResponse[] responseArray = objectMapper.readValue(
+                        responseJson,
+                        PixProcessamentoResponse[].class
+                    );
+
+                    if (responseArray != null && responseArray.length > 0) {
+                        PixProcessamentoResponse response = responseArray[0]; // Get the first response from the array
+                        status = response != null ? response.status().toString() : "ERROR";
+
+                        // Extract the endToEnd value from the inner JSON response string
+                        if (response != null && response.response() != null) {
+                            // Parse the inner response JSON string to extract endToEnd
+                            java.util.Map<String, Object> responseMap = objectMapper.readValue(
+                                response.response(),
+                                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {}
+                            );
+
+                            if (responseMap.containsKey("endToEnd")) {
+                                endToEnd = responseMap.get("endToEnd").toString();
+                            }
+                        }
+                    }
+                } catch (Exception parseException) {
+                    // If parsing fails, log the error and continue with default message
+                    traceService.logOperation("Error parsing response JSON: " + parseException.getMessage(), "RESPOSTA", "PIX_END2END", cpfCnpj, "", requestIdStr, "JSON Parse Error");
+                }
+            }
+
+            traceService.logOperation(responseLog, "RESPOSTA", "PIX_END2END", cpfCnpj, "", requestIdStr, status);
+
+            return new EndToEndResponse(endToEnd);
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+            String cpfCnpj = identificacaoArbiProperties.inscricaoParceiro();
+
+            // Log the error
+            traceService.logOperation("", "RESPOSTA", "PIX_END2END", cpfCnpj, "", requestIdStr, errorMessage);
+
+            throw new RuntimeException("Error processing PIX end-to-end - Error: " + errorMessage, e);
+        }
+    }
 }

@@ -145,4 +145,16 @@ public class PixController {
         }
     }
 
+    @GetMapping("/status/{end2endString}")
+    public ResponseEntity<?> getStatusByEndToEnd(@PathVariable String end2endString) {
+        try {
+            var response = pixService.getStatusByEndToEnd(end2endString);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+            Map<String, Object> errorResponse = Map.of("error", "Failed to get status for end-to-end: " + errorMessage);
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+
 }

@@ -35,4 +35,7 @@ public interface PixFeignClient {
 
     @PostMapping("/pix/v2/operacao/ordem_pagamento/")
     String realizarPixPayment(@RequestBody PixPaymentInternalRequest request);
+
+    @GetMapping("/pix/v2/operacao/ordem_pagamento/end_to_end/{end2endString}")
+    PixProcessamentoResponse[] getStatusByEndToEnd(@PathVariable("end2endString") String end2endString);
 }

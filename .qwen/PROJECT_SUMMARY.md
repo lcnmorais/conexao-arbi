@@ -1,10 +1,10 @@
 # Project Summary
 
 ## Overall Goal
-Implement a comprehensive banking API integration with clean architecture patterns, including PIX payment processing functionality that handles payment strings, end-to-end identifier processing, and actual payment execution using end-to-end identifiers.
+Implement a comprehensive banking API integration with clean architecture patterns, including PIX payment processing functionality that handles payment strings, end-to-end identifier processing, payment execution, and status checking.
 
 ## Key Knowledge
-- **Architecture**: Clean architecture with adapters/in/controller (controllers), adapters/out/feign (Feign clients), core/model (DTOs), core/services (business logic), and config (general configurations)
+- **Architecture**: Clean architecture with adapters/in/controller (controllers), adapters/out/feign (Feign clients), core/model (DTOs as Java records), core/services (business logic), and config (general configurations)
 - **Technology Stack**: Java, Spring Boot, Feign for HTTP clients, Jackson for JSON processing, with a trace file (accounts.dat) for logging operations
 - **Naming Convention**: DTOs are implemented as Java records
 - **Feign Configuration**: Using @RequestLine annotations instead of Spring annotations for Feign clients
@@ -14,6 +14,7 @@ Implement a comprehensive banking API integration with clean architecture patter
 - **Configuration Properties**: Using IdentificacaoArbiProperties for inscricaoParceiro(), contaPrevimil(), contaMockExterno()
 - **Data Transformation**: Complex mapping from input DTOs to internal DTOs with additional required fields
 - **UUID Handling**: Using UUID without dashes for idIdempotente field
+- **Status Checking**: New endpoint `/pix/v2/operacao/ordem_pagamento/end_to_end/{end2endString}` to get status of PIX payments by end-to-end identifier
 
 ## Recent Actions
 1. [DONE] Created PIX payment processing functionality with DTOs (PixEnd2EndProcessingRequest, PixEnd2EndProcessingResponse, PixProcessamentoRequest, PixProcessamentoResponse, EndToEndResponse)
@@ -27,7 +28,10 @@ Implement a comprehensive banking API integration with clean architecture patter
 9. [DONE] Created correct PixPaymentRequest and PixPaymentInternalRequest DTOs with proper fields for payment execution
 10. [DONE] Implemented the PIX payment execution functionality with proper transformation from input DTO to internal request DTO
 11. [DONE] Updated PixService and PixController to handle the complete payment workflow
-12. [COMPLETED] All required functionality has been implemented and tested
+12. [DONE] Added new method to PixFeignClient for checking status by end-to-end identifier
+13. [DONE] Implemented getStatusByEndToEnd method in PixService with proper logging
+14. [DONE] Created controller endpoint at /api/pix/status/{end2endString} to expose the status checking functionality
+15. [DONE] Successfully built the application confirming no compilation errors
 
 ## Current Plan
 - [DONE] Complete implementation of PIX end-to-end processing functionality
@@ -35,9 +39,10 @@ Implement a comprehensive banking API integration with clean architecture patter
 - [DONE] Rename classes to accurately represent the end-to-end stage rather than payment stage
 - [DONE] Correct the DTO structure for the actual payment execution
 - [DONE] Implement proper data transformation for payment execution
+- [DONE] Add functionality to check status of PIX payments by end-to-end identifier
 - [COMPLETED] All required functionality has been implemented and tested
 
 ---
 
 ## Summary Metadata
-**Update time**: 2025-11-26T18:08:10.955Z 
+**Update time**: 2025-11-26T18:32:12.666Z 

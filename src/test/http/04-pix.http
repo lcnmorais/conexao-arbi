@@ -39,6 +39,11 @@ Content-Type: application/json
 }
 
 
+### Obter status do end2end
+GET http://localhost:8080/api/pix/status/E54403563202510161937c4JpOq7k1rY
+
+
+
 ### Gerar End2End
 POST http://localhost:8080/api/pix/payment
 Content-Type: application/json
@@ -54,4 +59,3 @@ Content-Type: application/json
     "campoLivre":"Pagamento de Teste",
     "valorOperacao":10.00
 }
-

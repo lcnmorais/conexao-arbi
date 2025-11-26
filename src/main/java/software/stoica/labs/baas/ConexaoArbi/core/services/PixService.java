@@ -413,4 +413,48 @@ public class PixService {
             throw new RuntimeException("Error performing PIX payment - Error: " + errorMessage, e);
         }
     }
+
+    public PixProcessamentoResponse getStatusByEndToEnd(String end2endString) {
+        // Generate a request ID
+        Long requestId = requestPreparationService.generateRequestId();
+        String requestIdStr = requestId.toString();
+
+        try {
+            // Get a valid access token
+            AccessTokenResponse token = tokenManagementService.getAccessToken();
+
+            // Get CPF/CNPJ from properties
+            String cpfCnpj = identificacaoArbiProperties.inscricaoParceiro();
+
+            // Log the request
+            traceService.logOperation("end2endString: " + end2endString, "ENVIO", "PIX_STATUS", cpfCnpj, "", requestIdStr, "SUCESSO");
+
+            // Call the feign client to get status by end-to-end
+            PixProcessamentoResponse[] responseArray = pixFeignClient.getStatusByEndToEnd(end2endString);
+
+            // Log the response with Arbi request ID
+            String responseLog = responseArray != null && responseArray.length > 0 ?
+                responseArray[0].response() : "";
+
+            if (responseArray != null && responseArray.length > 0) {
+                PixProcessamentoResponse response = responseArray[0]; // Get the first response from the array
+                String status = response != null ? response.status().toString() : "ERROR";
+
+                traceService.logOperation(responseLog, "RESPOSTA", "PIX_STATUS", cpfCnpj, "", requestIdStr, status);
+                return response;
+            } else {
+                traceService.logOperation("", "RESPOSTA", "PIX_STATUS", cpfCnpj, "", requestIdStr, "No response returned");
+                throw new RuntimeException("No response returned for end-to-end: " + end2endString);
+            }
+        } catch (Exception e) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName() + " occurred without a message";
+            String cpfCnpj = identificacaoArbiProperties.inscricaoParceiro();
+
+            // Log the error
+            traceService.logOperation("", "RESPOSTA", "PIX_STATUS", cpfCnpj, "", requestIdStr, errorMessage);
+
+            throw new RuntimeException("Error getting status for end-to-end: " + end2endString +
+                " - Error: " + errorMessage, e);
+        }
+    }
 }
